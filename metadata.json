@@ -1,0 +1,5 @@
+{
+  "name": "DataNarrative AI",
+  "description": "A smart analytics tool that turns raw CSV data into compelling narrative stories using Google Gemini 2.5 Flash.",
+  "requestFramePermissions": []
+}
