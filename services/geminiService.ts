@@ -5,7 +5,7 @@ const API_KEY = process.env.API_KEY || '';
 
 export const generateStory = async (analysis: CSVAnalysis, userPrompt: string): Promise<string> => {
   if (!API_KEY) {
-    throw new Error("API Key is missing. Please check your .env file.");
+    throw new Error("API Key is missing. Please set the API_KEY environment variable in your .env file or deployment settings.");
   }
 
   const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -38,8 +38,17 @@ User Instruction: ${userPrompt}
     });
 
     return response.text || "No response generated.";
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini API Error:", error);
-    throw new Error("Failed to communicate with Gemini API. Please try again.");
+    
+    // Improve error messaging for the UI
+    let errorMessage = "Failed to communicate with Gemini API.";
+    if (error.message?.includes('403') || error.message?.includes('API key')) {
+      errorMessage = "Invalid or missing API Key. Please check your configuration.";
+    } else if (error.message?.includes('429')) {
+      errorMessage = "You are sending requests too quickly. Please wait a moment.";
+    }
+    
+    throw new Error(errorMessage);
   }
 };
